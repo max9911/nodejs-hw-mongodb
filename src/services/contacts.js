@@ -6,5 +6,21 @@ function getAllContacts() {
 function getContactById(id) {
   return Contact.findById(id);
 }
+function deleteContact(id) {
+  return Contact.findByIdAndDelete(id);
+}
+function postContact(contact) {
+  return Contact.create(contact);
+}
 
-export { getAllContacts, getContactById };
+function patchContact(id, contact) {
+  return Contact.findByIdAndUpdate(id, contact, { new: true });
+}
+
+export {
+  getAllContacts,
+  getContactById,
+  deleteContact,
+  postContact,
+  patchContact,
+};

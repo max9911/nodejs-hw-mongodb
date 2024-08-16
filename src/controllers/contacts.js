@@ -1,6 +1,7 @@
 import * as ContacsServices from '../services/contacts.js';
+import createHttpError from 'http-errors';
 
-async function getContacts(req, res) {
+async function getContacts(req, res, next) {
   const contacts = await ContacsServices.getAllContacts();
   res.send({
     status: 200,
@@ -8,15 +9,12 @@ async function getContacts(req, res) {
     data: contacts,
   });
 }
-async function getContactById(req, res) {
+async function getContactById(req, res, next) {
   const id = req.params.contactId;
   const contact = await ContacsServices.getContactById(id);
 
   if (contact === null) {
-    return res.status(404).send({
-      status: 404,
-      message: `Contact not found!`,
-    });
+    return next(createHttpError(404, `Contact not found!`));
   }
 
   res.send({
@@ -26,4 +24,56 @@ async function getContactById(req, res) {
   });
 }
 
-export { getContacts, getContactById };
+async function deleteContactById(req, res, next) {
+  const id = req.params.contactId;
+  const result = await ContacsServices.deleteContact(id);
+
+  if (result === null) {
+    return next(createHttpError(404, `Contact not found!`));
+  }
+
+  res.status(204).send({ status: 204 });
+}
+
+async function postContact(req, res, next) {
+  const contact = {
+    name: req.body.name,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email || null,
+    isFavorite: req.body.isFavorite || false,
+    contactType: req.body.contactType,
+  };
+
+  const result = await ContacsServices.postContact(contact);
+
+  res.status(201).send({
+    status: '201',
+    message: 'Successfully created a contact!',
+    data: result,
+  });
+}
+
+async function patchContact(req, res, next) {
+  const id = req.params.contactId;
+  const contact = req.body;
+
+  const result = await ContacsServices.patchContact(id, contact);
+
+  if (result === null) {
+    return next(createHttpError(404, `Contact not found!`));
+  }
+
+  res.status(200).send({
+    status: '200',
+    message: 'Successfully patched a contact!',
+    data: result,
+  });
+}
+
+export {
+  getContacts,
+  getContactById,
+  deleteContactById,
+  postContact,
+  patchContact,
+};
