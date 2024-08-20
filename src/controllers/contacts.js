@@ -47,7 +47,7 @@ async function postContact(req, res, next) {
   const result = await ContacsServices.postContact(contact);
 
   res.status(201).send({
-    status: '201',
+    status: 201,
     message: 'Successfully created a contact!',
     data: result,
   });
@@ -64,7 +64,7 @@ async function patchContact(req, res, next) {
   }
 
   res.status(200).send({
-    status: '200',
+    status: 200,
     message: 'Successfully patched a contact!',
     data: result,
   });
