@@ -1,12 +1,22 @@
 import * as ContacsServices from '../services/contacts.js';
 import createHttpError from 'http-errors';
+import { parsePagParams } from '../utils/parsePageParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 
 async function getContacts(req, res, next) {
-  const contacts = await ContacsServices.getAllContacts();
+  const { page, perPage } = parsePagParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+
+  const data = await ContacsServices.getAllContacts(
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+  );
   res.send({
     status: 200,
     message: 'Successfully found contacts!',
-    data: contacts,
+    data,
   });
 }
 async function getContactById(req, res, next) {
